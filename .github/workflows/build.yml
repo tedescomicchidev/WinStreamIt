@@ -1,0 +1,67 @@
+name: Build SonosStream
+
+on:
+  push:
+    branches: ["main", "master", "claude/**"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  build:
+    name: Build (${{ matrix.configuration }} / ${{ matrix.platform }})
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+        platform: [x64]
+        # arm64 excluded from CI — cross-compilation not supported for WinUI 3
+
+    env:
+      SOLUTION: SonosStream.sln
+      PROJECT: SonosStream/SonosStream.csproj
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        run: dotnet restore ${{ env.SOLUTION }} -p:Platform=${{ matrix.platform }}
+
+      - name: Build
+        run: >
+          dotnet build ${{ env.SOLUTION }}
+          --no-restore
+          --configuration ${{ matrix.configuration }}
+          -p:Platform=${{ matrix.platform }}
+
+      - name: Publish (Release only)
+        if: matrix.configuration == 'Release'
+        run: >
+          dotnet publish ${{ env.PROJECT }}
+          --no-restore
+          --configuration Release
+          -p:Platform=${{ matrix.platform }}
+          --runtime win-${{ matrix.platform }}
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          --output publish/${{ matrix.platform }}
+
+      - name: Upload artifact (Release only)
+        if: matrix.configuration == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SonosStream-${{ matrix.platform }}
+          path: publish/${{ matrix.platform }}/
+          if-no-files-found: error
+          retention-days: 30

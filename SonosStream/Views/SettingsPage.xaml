@@ -1,0 +1,188 @@
+<Page
+    x:Class="SonosStream.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Padding="24,16" Spacing="8" MaxWidth="600">
+
+            <TextBlock Text="Settings"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       Margin="0,0,0,16" />
+
+            <!-- ── Audio ─────────────────────────────────────────────────── -->
+            <TextBlock Text="Audio"
+                       Style="{StaticResource SubtitleTextBlockStyle}"
+                       Margin="0,8,0,4" />
+
+            <Border Padding="16"
+                    CornerRadius="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="16">
+
+                    <!-- Audio device -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Audio output device to capture"
+                                   Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <ComboBox x:Name="AudioDeviceCombo"
+                                  HorizontalAlignment="Stretch"
+                                  PlaceholderText="System default"
+                                  SelectionChanged="AudioDeviceCombo_SelectionChanged" />
+                    </StackPanel>
+
+                    <!-- Buffer size -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Ring-buffer size (seconds)"
+                                   Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock Text="Larger buffers protect against audio glitches but use more RAM."
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <NumberBox x:Name="BufferSizeBox"
+                                   Minimum="1"
+                                   Maximum="10"
+                                   Value="5"
+                                   SmallChange="1"
+                                   SpinButtonPlacementMode="Compact"
+                                   ValueChanged="BufferSizeBox_ValueChanged" />
+                    </StackPanel>
+
+                    <!-- Silence injection -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="Silence injection"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}" />
+                            <TextBlock Text="Keeps the stream alive when no audio is playing. Disable only for testing."
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="1"
+                                      x:Name="SilenceInjectionToggle"
+                                      VerticalAlignment="Center"
+                                      Toggled="SilenceInjectionToggle_Toggled" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Network ──────────────────────────────────────────────── -->
+            <TextBlock Text="Network"
+                       Style="{StaticResource SubtitleTextBlockStyle}"
+                       Margin="0,16,0,4" />
+
+            <Border Padding="16"
+                    CornerRadius="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="16">
+
+                    <!-- Server port -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="HTTP stream port"
+                                   Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock Text="Sonos speakers connect to this TCP port. Requires app restart to take effect."
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+                        <NumberBox x:Name="ServerPortBox"
+                                   Minimum="1024"
+                                   Maximum="65535"
+                                   Value="5901"
+                                   SmallChange="1"
+                                   SpinButtonPlacementMode="Compact"
+                                   ValueChanged="ServerPortBox_ValueChanged" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Reconnect ─────────────────────────────────────────────── -->
+            <TextBlock Text="Auto-reconnect"
+                       Style="{StaticResource SubtitleTextBlockStyle}"
+                       Margin="0,16,0,4" />
+
+            <Border Padding="16"
+                    CornerRadius="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="16">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="Auto-reconnect"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}" />
+                            <TextBlock Text="Re-initiate streaming if a speaker unexpectedly stops."
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="1"
+                                      x:Name="AutoReconnectToggle"
+                                      VerticalAlignment="Center"
+                                      Toggled="AutoReconnectToggle_Toggled" />
+                    </Grid>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Health-check interval (seconds)"
+                                   Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <NumberBox x:Name="ReconnectIntervalBox"
+                                   Minimum="5"
+                                   Maximum="120"
+                                   Value="10"
+                                   SmallChange="5"
+                                   SpinButtonPlacementMode="Compact"
+                                   ValueChanged="ReconnectIntervalBox_ValueChanged" />
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+
+            <!-- ── About ─────────────────────────────────────────────────── -->
+            <TextBlock Text="About"
+                       Style="{StaticResource SubtitleTextBlockStyle}"
+                       Margin="0,16,0,4" />
+
+            <Border Padding="16"
+                    CornerRadius="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="SonosStream"
+                               Style="{StaticResource BodyStrongTextBlockStyle}" />
+                    <TextBlock Text="Windows system audio streamer for Sonos speakers via UPnP/DLNA"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Text="Expected latency: 1-3 seconds (Sonos internal buffering)"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                               Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Save button -->
+            <Button x:Name="SaveButton"
+                    Content="Save Settings"
+                    Style="{StaticResource AccentButtonStyle}"
+                    HorizontalAlignment="Right"
+                    Margin="0,16,0,24"
+                    Click="SaveButton_Click" />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
