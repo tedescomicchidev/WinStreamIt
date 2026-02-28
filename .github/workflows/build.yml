@@ -2,7 +2,7 @@ name: Build SonosStream
 
 on:
   push:
-    branches: ["main", "master", "claude/**"]
+    branches: ["main", "master", "claude/**", "copilot/**"]
   pull_request:
     branches: ["main", "master"]
 
@@ -39,23 +39,24 @@ jobs:
 
       - name: Build
         run: >
-          dotnet build ${{ env.SOLUTION }}
-          --no-restore
-          --configuration ${{ matrix.configuration }}
-          -p:Platform=${{ matrix.platform }}
+          msbuild ${{ env.SOLUTION }}
+          /p:Configuration=${{ matrix.configuration }}
+          /p:Platform=${{ matrix.platform }}
+          /p:RestorePackages=false
 
       - name: Publish (Release only)
         if: matrix.configuration == 'Release'
         run: >
-          dotnet publish ${{ env.PROJECT }}
-          --no-restore
-          --configuration Release
-          -p:Platform=${{ matrix.platform }}
-          --runtime win-${{ matrix.platform }}
-          --self-contained true
-          -p:PublishSingleFile=true
-          -p:IncludeNativeLibrariesForSelfExtract=true
-          --output publish/${{ matrix.platform }}
+          msbuild ${{ env.PROJECT }}
+          /t:Publish
+          /p:Configuration=Release
+          /p:Platform=${{ matrix.platform }}
+          /p:RuntimeIdentifier=win-${{ matrix.platform }}
+          /p:SelfContained=true
+          /p:PublishSingleFile=true
+          /p:IncludeNativeLibrariesForSelfExtract=true
+          /p:PublishDir=publish/${{ matrix.platform }}/
+          /p:RestorePackages=false
 
       - name: Upload artifact (Release only)
         if: matrix.configuration == 'Release'
