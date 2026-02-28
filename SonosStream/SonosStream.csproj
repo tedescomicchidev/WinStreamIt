@@ -16,6 +16,7 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <AssemblyName>SonosStream</AssemblyName>
     <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+    <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
 
   <ItemGroup>
